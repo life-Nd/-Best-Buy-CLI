@@ -9,53 +9,78 @@ import java.util.Scanner;
 
 // Singleton market space
 class MarketSpace {
+    // create a constant reference to the MarketSpace instance
     private static final MarketSpace INSTANCE = new MarketSpace();
+
+    // create a constant reference to the default Computer object
     private static Component defaultComputer = new Component("Default Computer", 700);
 
+    // get the MarketSpace instance
     public static MarketSpace getInstance() {
         return INSTANCE;
     }
 
+    // list of Computer objects added to the cart
     private static List<Computer> cart = new ArrayList<>();
+
+    // map of available products (key: product name, value: product details)
     private Map<String, Component> products;
+
+    // scanner to read user input from the command-line interface (CLI)
     private static Scanner scanner = new Scanner(System.in);
 
+    // private constructor to ensure that only one instance of the MarketSpace class
+    // is created
     private MarketSpace() {
+        // initialize the products map
         products = new HashMap<>();
     }
 
     void loadComponents() {
         // Load Components from file
         try {
+            // read the products data file and create a BufferedReader object
             BufferedReader reader = new BufferedReader(new FileReader("products.txt"));
+
+            // read each line from the file
             String line;
             while ((line = reader.readLine()) != null) {
+                // split the line into parts based on the comma separator
                 String[] parts = line.split(",");
+
+                // get the name and price of the product
                 String name = parts[0].trim();
                 double price = Double.parseDouble(parts[1].trim());
-                Component component = new Component(name, price);
-                // addComponent(new Component(name, price));
 
+                // create a Component object with the name and price of the product
+                Component component = new Component(name, price);
+
+                // add the Component object to the products map
                 products.put(component.getName(), component);
             }
+
+            // close the BufferedReader object
             reader.close();
         } catch (Exception e) {
         }
-
     }
 
+    // return the list of products
     public Map<String, Component> getProducts() {
         return products;
     }
 
+    // add a new component to the Map<String,Component> products
     public void addComponent(Component Component) {
         products.put(Component.getName(), Component);
     }
 
+    // return a specific product
     public Component getComponent(String name) {
         return products.get(name);
     }
 
+    // start the Command-Line-Interface to get the user to interact with the program
     public void startCLI() {
 
         while (true) {
@@ -67,6 +92,7 @@ class MarketSpace {
             System.out.println("5: Quit");
 
             int choice = scanner.nextInt();
+            // show a specific function depending on the user input
             switch (choice) {
                 case 1:
                     buyComputer();
@@ -83,7 +109,7 @@ class MarketSpace {
                 case 5:
                     return;
                 default:
-                    System.out.println("Invalid choice, try again.");
+                    System.out.println("❌ Invalid choice, try again.");
                     break;
             }
         }
@@ -92,7 +118,6 @@ class MarketSpace {
 
     private static void buyComputer() {
         // Create a new computer with default computer
-        // Computer computer = new Computer(defaultComputer);
         ComputerDecorator computer = new ComputerDecorator(defaultComputer);
 
         // Add Components to the computer
@@ -112,20 +137,22 @@ class MarketSpace {
             }
             System.out.println((market.getProducts().size() + 1) + ": Done");
             int choice = scanner.nextInt();
-            if (choice == market.getProducts().size() + 1) {
-                break;
+            try {
+                if (choice == market.getProducts().size() + 1) {
+                    break;
+                }
+                Component component = (Component) market.getProducts().values().toArray()[choice - 1];
+                computer.addComponent(new Component(component.getName(), component.getPrice()));
+            } catch (Exception e) {
+                System.out.println("❌ Invalid choice, try again.");
+
             }
-            Component component = (Component) market.getProducts().values().toArray()[choice - 1];
-            computer.addComponent(new Component(component.getName(), component.getPrice()));
-            
-            // Component newComponent = new ComputerDecorator(component.getName(), component.getPrice());
-            // computer.addComponent(newComponent);
+
         }
 
         // Add the computer to the list of cart
         cart.add(computer);
     }
-
 
     private static void seeShoppingCart() {
         if (cart.isEmpty()) {
