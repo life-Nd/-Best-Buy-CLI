@@ -92,7 +92,8 @@ class MarketSpace {
 
     private static void buyComputer() {
         // Create a new computer with default computer
-        Computer computer = new Computer(defaultComputer);
+        // Computer computer = new Computer(defaultComputer);
+        ComputerDecorator computer = new ComputerDecorator(defaultComputer);
 
         // Add Components to the computer
         while (true) {
@@ -115,13 +116,16 @@ class MarketSpace {
                 break;
             }
             Component component = (Component) market.getProducts().values().toArray()[choice - 1];
-            Component newComponent = new ComputerDecorator(component.getName(), component.getPrice());
-            computer.addComponent(newComponent);
+            computer.addComponent(new Component(component.getName(), component.getPrice()));
+            
+            // Component newComponent = new ComputerDecorator(component.getName(), component.getPrice());
+            // computer.addComponent(newComponent);
         }
 
         // Add the computer to the list of cart
         cart.add(computer);
     }
+
 
     private static void seeShoppingCart() {
         if (cart.isEmpty()) {
@@ -130,7 +134,7 @@ class MarketSpace {
             System.out.print("Your shopping cart: \n[");
             for (Computer computer : cart) {
                 System.out.print("OrderID@" + computer.getOrderId() + " : " + computer.getComputer().getName() + " ");
-                System.out.println(computer.getDescription());
+                System.out.print(computer.getDescription());
                 System.out.println("and total price is " + computer.getPrice() + " $");
             }
             System.out.println("]");
